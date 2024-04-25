@@ -1,0 +1,272 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://habit.swagger.io/v2'
+  - url: ''
+    description: ''
+info:
+  description: 'This is a Harmful Algal Bloom data API created using Planet Labs data.  '
+  version: 1.0.0
+  title: HABit
+  termsOfService: ''
+  contact:
+    email: isabellaotterson@berkeley.edu
+    name: Isabella Otterson
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: HAB
+    description: Everything about HAB
+paths:
+  '/warning/{level}':
+    get:
+      tags:
+        - HAB
+      summary: Get a warning by level
+      description: ''
+      operationId: getWarningByLevel
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: Warning not found
+        '405':
+          description: Validation exception
+      parameters:
+        - name: level
+          in: query
+          required: false
+          schema:
+            type: string
+          description: level of HAB danger
+      security: []
+  /warning:
+    get:
+      tags:
+        - HAB
+      summary: Gets all warnings.
+      description: ''
+      operationId: getWarnings
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema: {}
+      parameters: []
+  /HAB/location:
+    get:
+      tags:
+        - HAB
+      summary: Get all locations
+      description: 'Get a list of all locations by locationID and name. '
+      operationId: getLocations
+      parameters:
+        - name: tags
+          in: query
+          description: Tags to filter by
+          required: true
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema: {}
+      security:
+        - api_key: []
+      deprecated: true
+  '/HAB/location/{locationID}':
+    get:
+      summary: Get HAB data at specific location
+      description: Returns HAB data at a specific location.
+      operationId: getHABDataByID
+      parameters:
+        - name: locationID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: locationID to be matched to recieve HAB data.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema: {}
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+      security:
+        - api_key: []
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+    Warning:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        locationId:
+          type: integer
+          format: int64
+        overallHABMeasurement:
+          type: integer
+          format: int32
+        shipDate:
+          type: string
+          format: date-time
+        status:
+          type: string
+          description: Order Status
+          enum:
+            - placed
+            - approved
+            - delivered
+        complete:
+          type: boolean
+          default: false
+      xml:
+        name: Order
+    Location:
+      type: object
+      required:
+        - name
+        - photoUrls
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          type: object
+          properties:
+            id:
+              type: integer
+              format: int64
+            name:
+              type: string
+          xml:
+            name: Category
+        name:
+          type: string
+          example: doggie
+        photoUrls:
+          type: array
+          xml:
+            name: photoUrl
+            wrapped: true
+          items:
+            type: string
+        tags:
+          type: array
+          xml:
+            name: tag
+            wrapped: true
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                format: int64
+              name:
+                type: string
+            xml:
+              name: Tag
+        status:
+          type: string
+          description: pet status in the store
+          enum:
+            - available
+            - pending
+            - sold
+      xml:
+        name: Pet
+  requestBodies:
+    Pet:
+      content:
+        application/json:
+          schema: {}
+      description: Pet object that needs to be added to the store
+      required: true
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                username:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: string
+                userStatus:
+                  type: integer
+                  format: int32
+                  description: User Status
+              xml:
+                name: User
+      description: List of user object
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+    habit_auth:
+      type: oauth2
+      flows:
+        password: {}
+  links: {}
+  callbacks: {}
+security:
+  - api_key: []
