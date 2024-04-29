@@ -1,0 +1,242 @@
+openapi: 3.0.0
+servers:
+  - url: 'http://habit.swagger.io/v2'
+  - url: ''
+    description: ''
+info:
+  description: 'This is a Harmful Algal Bloom data API created using Planet Labs data.  '
+  version: 1.0.0
+  title: HABit
+  termsOfService: ''
+  contact:
+    email: isabellaotterson@berkeley.edu
+    name: Isabella Otterson
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: HAB
+    description: Everything about HAB
+paths:
+  /warning:
+    get:
+      tags:
+        - HAB
+      summary: Gets all warnings.
+      description: ''
+      operationId: getWarnings
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/level'
+      parameters: []
+  /HAB/location:
+    get:
+      tags:
+        - HAB
+      summary: Get all locations
+      description: 'Get a list of all locations by locationID and name. '
+      operationId: getLocations
+      parameters:
+        - name: tags
+          in: query
+          description: Tags to filter by
+          required: true
+          explode: true
+          schema:
+            type: array
+            items:
+              type: string
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/location'
+      security:
+        - api_key: []
+      deprecated: true
+  '/HAB/location/{locationID}':
+    get:
+      summary: Get HAB data at specific location
+      description: Returns HAB data at a specific location.
+      operationId: getHABDataByID
+      parameters:
+        - name: locationID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: locationID to be matched to recieve HAB data.
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Pet not found
+      security:
+        - api_key: []
+components:
+  schemas:
+    Category:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Category
+    Tag:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          type: string
+      xml:
+        name: Tag
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+    level:
+      type: object
+      properties:
+        levelID:
+          type: string
+        greaterThanEqual:
+          type: string
+        lessThan:
+          type: int
+        type: int
+        name:
+          type: string
+        nickname:
+          type: string
+        propername:
+          type: string
+        shortDescription:
+          type: string
+        longDescription:
+          type: string
+    satellitedata:
+      type: object
+      properties:
+        dataID:
+          type: string
+        bayID:
+          type: string
+        chlor_a:
+          type: int
+        dateCaptures:
+          type: timestamp
+        geojson:
+          type: geojson
+        levelID:
+          type: string
+        levelNickname:
+          type: string
+        levelPropername:
+          type: string
+        levelName:
+          type: string
+        longDescription:
+          type: string
+        shortDescription:
+          type: string
+    bay:
+      type: object
+      properties:
+        name: {}
+        bayID:
+          type: string
+        coords:
+          longitude: {}
+          type: int
+          latitude:
+            'type:': int
+    location:
+      type: object
+      properties:
+        bayID:
+          type: string
+        coords:
+          longitude:
+            type: int
+          latitude:
+            type: int
+        mostrecentDataID:
+          type: string
+        name:
+          type: string
+        locationID:
+          type: string
+  requestBodies:
+    Pet:
+      content:
+        application/json:
+          schema: {}
+      description: Pet object that needs to be added to the store
+      required: true
+    UserArray:
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  format: int64
+                username:
+                  type: string
+                firstName:
+                  type: string
+                lastName:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+                phone:
+                  type: string
+                userStatus:
+                  type: integer
+                  format: int32
+                  description: User Status
+              xml:
+                name: User
+      description: List of user object
+      required: true
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
+    habit_auth:
+      type: oauth2
+      flows:
+        password: {}
+  links: {}
+  callbacks: {}
+security:
+  - api_key: []
