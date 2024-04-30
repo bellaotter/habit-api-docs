@@ -4,7 +4,10 @@ servers:
   - url: ''
     description: ''
 info:
-  description: 'This is a Harmful Algal Bloom data API created using Planet Labs data.  '
+  description: >-
+    This is a HAB data API created using Planet Labs data. It's provides
+    chlorophyl-a density identification and can be used for pro-active screening
+    purposes and HAB awareness. 
   version: 1.0.0
   title: HABit
   termsOfService: ''
@@ -14,17 +17,17 @@ info:
   license:
     name: Apache 2.0
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-tags:
-  - name: HAB
-    description: Everything about HAB
+tags: []
 paths:
-  /warning:
+  /levels:
     get:
       tags:
-        - HAB
-      summary: Gets all warnings.
-      description: ''
-      operationId: getWarnings
+        - Level
+      summary: Gets all levels.
+      description: >-
+        Gets all 4 chlorophyl-a levels (Oligotrophic, Mesotrophic, Eutrophic, &
+        Hypereutrophic) and associated warning infos. 
+      operationId: getAllLevels
       responses:
         '200':
           description: successful operation
@@ -33,58 +36,204 @@ paths:
               schema:
                 $ref: '#/components/schemas/level'
       parameters: []
-  /HAB/location:
+  '/levels/{levelID}':
     get:
-      tags:
-        - HAB
-      summary: Get all locations
-      description: 'Get a list of all locations by locationID and name. '
-      operationId: getLocations
+      summary: ''
+      description: ''
       parameters:
-        - name: tags
+        - name: levelID
           in: query
-          description: Tags to filter by
-          required: true
-          explode: true
+          required: false
           schema:
-            type: array
-            items:
-              type: string
+            type: string
+          description: 'This is the ID of the chlorophyl-A concentration level. '
+      operationId: getLevelByID
+      responses:
+        default:
+          description: Default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/level'
+      tags:
+        - Level
+  /location:
+    get:
+      summary: 'Get all locations available. '
+      description: Gets a list of all the locations available through the API.
+      parameters: []
+      operationId: getAllLocations
       responses:
         '200':
-          description: successful operation
+          description: Description
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/location'
-      security:
-        - api_key: []
-      deprecated: true
-  '/HAB/location/{locationID}':
+      tags:
+        - Location
+  '/location/{locationID}':
     get:
-      summary: Get HAB data at specific location
-      description: Returns HAB data at a specific location.
-      operationId: getHABDataByID
+      summary: Get a location by locationID.
+      description: ''
       parameters:
         - name: locationID
           in: query
           required: false
           schema:
             type: string
-          description: locationID to be matched to recieve HAB data.
+          description: The ID of a specific location.
+      operationId: getLocationByID
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Location
+  /bay:
+    get:
+      summary: Get a list of all the bays.
+      description: 'Returns a list of all the bay objects available. '
+      parameters: []
+      operationId: getAllBays
+      responses:
+        default:
+          description: Default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bay'
+      tags:
+        - Bay
+  '/bay/{bayID}':
+    get:
+      summary: Get a bay by its ID.
+      description: Returns the bay object associated with the ID.
+      parameters: []
+      operationId: getBayByID
       responses:
         '200':
-          description: successful operation
+          description: Description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/bay'
+  '/satdata/{satdataID}':
+    x-temp:
+      summary: ''
+      description: ''
+      parameters: []
+      operationId: getSatadatabyID
+      responses:
+        default:
+          description: Default response
+    get:
+      summary: Get a satellite dataset by ID.
+      description: ''
+      parameters:
+        - name: satdataID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The ID of a specific satellite data set.
+      operationId: getSatdataByID
+      responses:
+        default:
+          description: Default response
+      tags:
+        - Satdata
+  /satadata/findByBay:
+    summary: Get satellite data from a specific bay.
+    get:
+      summary: Get satellite data by a specific Bay.
+      description: ''
+      parameters:
+        - name: bayID
+          in: query
+          required: false
+          schema:
+            type: string
+          description: The ID of a specific Bay.
+      operationId: findByBay
+      responses:
+        '200':
+          description: Description
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/satellitedata'
-        '400':
-          description: Invalid ID supplied
-        '404':
-          description: Pet not found
-      security:
-        - api_key: []
+      tags:
+        - Satdata
+  '/satadata/findByBay/{mostRecent}':
+    summary: Get the most recent satellite data of a specific location.
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: locationID
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: mostRecent
+          in: query
+          required: false
+          schema:
+            type: string
+      operationId: findByBay
+      responses:
+        '200':
+          description: Description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
+  '/satdata/findByLocation/{mostRecent}':
+    get:
+      summary: Find the most recent satellite data by location.
+      description: ''
+      parameters:
+        - name: locationID
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: mostRecent
+          in: query
+          required: false
+          schema:
+            type: string
+      operationId: findByLocationMostRecent
+      responses:
+        '200':
+          description: Description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
+  /satdata/:
+    get:
+      summary: ''
+      description: ''
+      parameters:
+        - name: mostRecent
+          in: query
+          required: false
+          schema:
+            type: string
+            default: 'false'
+          description: >-
+            Determine whether we should retrieve the mostRecent satellite data
+            recording for each bay. 
+          allowEmptyValue: true
+      operationId: getSatdata
+      responses:
+        '200':
+          description: Description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
 components:
   schemas:
     Category:
@@ -126,7 +275,6 @@ components:
           type: string
         lessThan:
           type: int
-        type: int
         name:
           type: string
         nickname:
@@ -179,6 +327,7 @@ components:
         bayID:
           type: string
         coords:
+          type: obj
           longitude:
             type: int
           latitude:
