@@ -1,11 +1,10 @@
 openapi: 3.0.0
 servers:
   - url: 'http://habit.swagger.io/v2'
+  - url: ''
+    description: ''
 info:
-  description: >-
-    This is a HAB data API created using Planet Labs data. It's provides
-    chlorophyl-a density identification and can be used for pro-active screening
-    purposes and HAB awareness. 
+  description: 'This is a Harmful Algal Bloom data API created using Planet Labs data.  '
   version: 1.0.0
   title: HABit
   termsOfService: ''
@@ -83,8 +82,12 @@ paths:
           description: The ID of a specific location.
       operationId: getLocationByID
       responses:
-        default:
-          description: Default response
+        '200':
+          description: Description
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
       tags:
         - Location
   /bay:
@@ -136,8 +139,8 @@ paths:
           description: The ID of a specific satellite data set.
       operationId: getSatdataByID
       responses:
-        default:
-          description: Default response
+        '200':
+          description: Description
           content:
             application/json:
               schema:
@@ -223,11 +226,9 @@ paths:
           required: false
           schema:
             type: string
-            default: 'false'
           description: >-
             Determine whether we should retrieve the mostRecent satellite data
             recording for each bay. 
-          allowEmptyValue: true
       operationId: getSatdata
       responses:
         '200':
