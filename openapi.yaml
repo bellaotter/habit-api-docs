@@ -237,6 +237,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/satellitedata'
+      tags:
+        - Satdata
 components:
   schemas:
     Category:
