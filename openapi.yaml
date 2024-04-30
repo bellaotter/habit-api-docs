@@ -1,8 +1,6 @@
 openapi: 3.0.0
 servers:
   - url: 'http://habit.swagger.io/v2'
-  - url: ''
-    description: ''
 info:
   description: >-
     This is a HAB data API created using Planet Labs data. It's provides
@@ -140,6 +138,10 @@ paths:
       responses:
         default:
           description: Default response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/satellitedata'
       tags:
         - Satdata
   /satadata/findByBay:
